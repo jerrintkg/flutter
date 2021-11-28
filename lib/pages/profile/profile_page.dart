@@ -1,0 +1,52 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+class ProfilePage extends StatelessWidget {
+  const ProfilePage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Profile Screen'),
+      ),
+      body: Scaffold(
+        // bottomNavigationBar: BottomNavigationBar(
+        //   type: BottomNavigationBarType.fixed,
+        //   items: const [
+        //     BottomNavigationBarItem(
+        //       label: 'Post',
+        //       icon: Icon(Icons.post_add_outlined),
+        //     ),
+        //     BottomNavigationBarItem(
+        //       label: 'For You',
+        //       icon: Icon(Icons.recommend),
+        //     ),
+        //     BottomNavigationBarItem(
+        //       label: 'Live',
+        //       icon: Icon(Icons.live_tv),
+        //     ),
+        //     BottomNavigationBarItem(
+        //       label: 'Account',
+        //       icon: Icon(Icons.account_box),
+        //     ),
+        //   ],
+        // ),
+        body: Builder(builder: (BuildContext newContext) {
+          return Center(
+            child: ElevatedButton(
+                child: const Text('Press Me'),
+                onPressed: () => {
+                      Get.snackbar(
+                        'Just a Demo',
+                        'Demo message From Profile Page',
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: Colors.redAccent,
+                      ),
+                    }),
+          );
+        }),
+      ),
+    );
+  }
+}
