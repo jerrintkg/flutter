@@ -1,1 +1,1 @@
-class Helpers {}
+abstract class Helpers {}

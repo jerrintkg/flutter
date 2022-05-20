@@ -1,8 +1,10 @@
+import 'package:app/pages/home/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
+  HomePage({Key? key}) : super(key: key);
+  final homeController = Get.put(HomeController());
 
   @override
   Widget build(BuildContext context) {
@@ -35,9 +37,10 @@ class HomePage extends StatelessWidget {
         body: Builder(builder: (BuildContext newContext) {
           return Center(
             child: ElevatedButton(
-                child: const Text('Press Me'),
+                child: Obx(() => Text(homeController.data.toString())),
                 onPressed: () => {
-                      Get.toNamed('/profile'),
+                      homeController.changeData('Raja')
+                      // Get.toNamed('/profile'),
                       // Get.snackbar(
                       //   'Just a Demo',
                       //   'Demo message From Home Page',

@@ -1,11 +1,13 @@
-import 'package:app/pages/profile/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:app/pages/home/home_page.dart';
+import 'package:app/pages/profile/profile_page.dart';
+import 'package:app/utilities/theme.dart';
 
 void main() => runApp(const RootWidget());
 
 class RootWidget extends StatelessWidget {
+
   const RootWidget({Key? key}) : super(key: key);
 
   @override
@@ -15,8 +17,8 @@ class RootWidget extends StatelessWidget {
         getPages: [
           GetPage(
             name: '/',
-            page: () => const HomePage(),
-            transition: Transition.zoom,
+            page: () => HomePage(),
+            transition: Transition.native,
           ),
           GetPage(
             name: '/profile',
@@ -26,8 +28,7 @@ class RootWidget extends StatelessWidget {
           // GetPage(name: '/', page: () => HomePage()),
           // GetPage(name: '/', page: () => HomePage()),
         ],
-        theme: ThemeData(
-          primarySwatch: Colors.green,
-        ));
+        theme: themeData,
+    );
   }
 }

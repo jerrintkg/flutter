@@ -31,149 +31,87 @@ class InvalidInputException extends AppException {
   InvalidInputException([String? message]) : super(message, "Invalid Input: ");
 }
 
-class NetworkService {
-  final String _baseUrl = Config.hostName;
+abstract class NetworkService {
 
-  Future<dynamic> request(
-    String method,
-    String accessPoint,
-    Map<String, String> params,
-    List<String> urlParams,
+  Future<dynamic> request({
+    required String method,
+    required String accessPoint,
+    Map<String, String>? body,
+    List<String>? urlParams,
+    List<String>? accessPointParams}
   ) async {
-    var responseJson;
-
-    Map<String, String> headers = {
-      'Content-type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': '<Your token>'
-    };
+    const String _baseUrl = Config.hostName;
+    String endPoint = _returnEndPoint(Config.endPoints[accessPoint] as String);
+    Map<String, String> headers = { 'Content-type': 'application/json', 'Accept': 'application/json', 'Authorization': '<Your token>' };
+    http.Response response;
 
     try {
-      var response;
       switch (method) {
         case 'GET':
           response = await http.get(
-            Uri.parse(_baseUrl + accessPoint),
+            Uri.parse(_baseUrl + endPoint),
             headers: headers,
           );
           break;
         case 'POST':
-          response = await http.post(Uri.parse(_baseUrl + accessPoint));
+          response = await http.post(
+            Uri.parse(_baseUrl + endPoint),
+            headers: headers,
+            body: body
+          );
           break;
         case 'DELETE':
-          response = await http.delete(Uri.parse(_baseUrl + accessPoint));
+          response = await http.delete(
+            Uri.parse(_baseUrl + endPoint),
+            headers: headers,
+            body: body
+          );
           break;
         case 'PUT':
-          response = await http.put(Uri.parse(_baseUrl + accessPoint));
+          response = await http.put(
+            Uri.parse(_baseUrl + endPoint),
+            headers: headers,
+            body: body
+          );
           break;
         case 'PATCH':
-          response = await http.patch(Uri.parse(_baseUrl + accessPoint));
+          response = await http.patch(
+            Uri.parse(_baseUrl + endPoint),
+            headers: headers,
+            body: body
+          );
           break;
         default:
           throw FetchDataException('No Function found');
       }
-      responseJson = _returnResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet connection');
+    } catch(error){
+      throw FetchDataException('Error in request function -> ${error.toString()}');
     }
-    return responseJson;
+    return _returnResponse(response);
   }
 
-  // Future<dynamic> get(
-  //   String accessPoint,
-  //   Map<String, String> params,
-  //   List<String> urlParams,
-  // ) async {
-  //   var responseJson;
-
-  //   try {
-  //     final response = await http.get(Uri.parse(_baseUrl + accessPoint));
-  //     responseJson = _returnResponse(response);
-  //   } on SocketException {
-  //     throw FetchDataException('No Internet connection');
-  //   }
-  //   return responseJson;
-  // }
-
-  // Future<dynamic> post(
-  //   String accessPoint,
-  //   Map<String, String> params,
-  //   List<String> urlParams,
-  // ) async {
-  //   var responseJson;
-
-  //   try {
-  //     final response = await http.post(Uri.parse(_baseUrl + accessPoint));
-  //     responseJson = _returnResponse(response);
-  //   } on SocketException {
-  //     throw FetchDataException('No Internet connection');
-  //   }
-  //   return responseJson;
-  // }
-
-  // Future<dynamic> delete(
-  //   String accessPoint,
-  //   Map<String, String> params,
-  //   List<String> urlParams,
-  // ) async {
-  //   var responseJson;
-
-  //   try {
-  //     final response = await http.delete(Uri.parse(_baseUrl + accessPoint));
-  //     responseJson = _returnResponse(response);
-  //   } on SocketException {
-  //     throw FetchDataException('No Internet connection');
-  //   }
-  //   return responseJson;
-  // }
-
-  // Future<dynamic> put(
-  //   String accessPoint,
-  //   Map<String, String> params,
-  //   List<String> urlParams,
-  // ) async {
-  //   var responseJson;
-
-  //   try {
-  //     final response = await http.put(Uri.parse(_baseUrl + accessPoint));
-  //     responseJson = _returnResponse(response);
-  //   } on SocketException {
-  //     throw FetchDataException('No Internet connection');
-  //   }
-  //   return responseJson;
-  // }
-
-  // Future<dynamic> patch(
-  //   String accessPoint,
-  //   Map<String, String> params,
-  //   List<String> urlParams,
-  // ) async {
-  //   var responseJson;
-
-  //   try {
-  //     final response = await http.patch(Uri.parse(_baseUrl + accessPoint));
-  //     responseJson = _returnResponse(response);
-  //   } on SocketException {
-  //     throw FetchDataException('No Internet connection');
-  //   }
-  //   return responseJson;
-  // }
-
   dynamic _returnResponse(http.Response response) {
-    switch (response.statusCode) {
-      case 200:
-        var responseJson = json.decode(response.body.toString());
-        // print(responseJson);
-        return responseJson;
-      case 400:
-        throw BadRequestException(response.body.toString());
-      case 401:
-      case 403:
-        throw UnauthorisedException(response.body.toString());
-      case 500:
-      default:
-        throw FetchDataException(
-            'Error occured while Communication with Server with StatusCode : ${response.statusCode}');
+    try {
+      switch (response.statusCode) {
+        case 200:
+          return json.decode(response.body.toString());
+        case 400:
+          throw BadRequestException(response.body.toString());
+        case 401:
+        case 403:
+          throw UnauthorisedException(response.body.toString());
+        case 500:
+        default:
+          throw FetchDataException('Error occured while Communication with Server with StatusCode : ${response.statusCode}');
+      } 
+    } catch (error) {
+      throw FetchDataException('Error in json.decode -> ${error.toString()}');
     }
+  }
+
+  String _returnEndPoint(String endPoint){
+    return endPoint.toString();
   }
 }
